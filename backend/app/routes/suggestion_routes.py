@@ -8,7 +8,7 @@ suggestion_bp = Blueprint("suggestion", __name__)
 @suggestion_bp.get("/")
 @jwt_required()
 def get_suggestions():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get_or_404(user_id)
     today_str = date.today().isoformat()
 

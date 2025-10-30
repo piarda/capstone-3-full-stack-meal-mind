@@ -25,6 +25,15 @@ class Meal(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     food_items = db.relationship("FoodItem", backref="meal", lazy=True, cascade="all, delete")
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "date": self.date,
+            "user_id": self.user_id
+            # "foods": [f.serialize() for f in self.food_items] <<< if I want to fetch meals and their foods together later
+        }
+
 class FoodItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -33,3 +42,14 @@ class FoodItem(db.Model):
     carbs = db.Column(db.Float)
     fat = db.Column(db.Float)
     meal_id = db.Column(db.Integer, db.ForeignKey("meal.id"), nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "calories": self.calories,
+            "protein": self.protein,
+            "carbs": self.carbs,
+            "fat": self.fat,
+            "meal_id": self.meal_id
+        }

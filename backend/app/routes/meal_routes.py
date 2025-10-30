@@ -8,24 +8,24 @@ meal_bp = Blueprint("meal", __name__)
 @meal_bp.get("/")
 @jwt_required()
 def get_meals():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     meals = Meal.query.filter_by(user_id=user_id).all()
-    return jsonify([{"id": m.id, "name": m.name, "date": m.date} for m in meals])
+    return jsonify([m.serialize() for m in meals]), 200
 
 @meal_bp.post("/")
 @jwt_required()
 def create_meal():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
     meal = Meal(name=data.get("name"), date=data.get("date"), user_id=user_id)
     db.session.add(meal)
     db.session.commit()
-    return jsonify({"message": "Meal added", "meal_id": meal.id}), 201
+    return jsonify(meal.serialize()), 201
 
 @meal_bp.put("/<int:meal_id>")
 @jwt_required()
 def update_meal(meal_id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     meal = Meal.query.get_or_404(meal_id)
 
     if meal.user_id != user_id:
@@ -36,12 +36,12 @@ def update_meal(meal_id):
     meal.date = data.get("date", meal.date)
     db.session.commit()
 
-    return jsonify({"message": "Meal updated successfully"})
+    return jsonify(meal.serialize()), 200
 
 @meal_bp.delete("/<int:meal_id>")
 @jwt_required()
 def delete_meal(meal_id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     meal = Meal.query.get_or_404(meal_id)
 
     if meal.user_id != user_id:
@@ -49,12 +49,12 @@ def delete_meal(meal_id):
     
     db.session.delete(meal)
     db.session.commit()
-    return jsonify({"message": "Meal deleted"})
+    return jsonify({"message": "Meal deleted"}), 200
 
 @meal_bp.get("/summary/today")
 @jwt_required()
 def daily_summary():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     today_str = date.today().isoformat()
     meals = Meal.query.filter_by(user_id=user_id, date=today_str).all()
 
@@ -67,4 +67,4 @@ def daily_summary():
             total["carbs"] += food.carbs or 0
             total["fat"] += food.fat or 0
 
-    return jsonify(total)
+    return jsonify(total), 200
