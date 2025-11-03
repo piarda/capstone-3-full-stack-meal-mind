@@ -3,6 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import api from "../api/api";
 import AddMealForm from "../components/AddMealForm";
 import MealCard from "../components/MealCard";
+import MoodLogForm from "../components/MoodLogForm";
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
@@ -85,6 +86,10 @@ const Dashboard = () => {
                     ))}
                 </ul>
                 )}
+            </section>
+
+            <section className="mb-8">
+                <MoodLogForm />
             </section>
 
             <section>

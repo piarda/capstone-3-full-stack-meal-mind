@@ -1,5 +1,6 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import date
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -11,6 +12,7 @@ class User(db.Model):
     carb_goal = db.Column(db.Integer, default=250)
     fat_goal = db.Column(db.Integer, default=70)
     meals = db.relationship("Meal", backref="user", lazy=True, cascade="all, delete")
+    mood_logs = db.relationship("MoodLog", backref="user", lazy=True, cascade="all, delete")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -52,4 +54,20 @@ class FoodItem(db.Model):
             "carbs": self.carbs,
             "fat": self.fat,
             "meal_id": self.meal_id
+        }
+
+class MoodLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    date = db.Column(db.String(20))
+    mood_score = db.Column(db.Integer)
+    energy_level = db.Column(db.Integer)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "date": self.date,
+            "mood_score": self.mood_score,
+            "energy_level": self.energy_level
         }
