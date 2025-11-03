@@ -9,7 +9,7 @@ meal_bp = Blueprint("meal", __name__)
 @jwt_required()
 def get_meals():
     user_id = int(get_jwt_identity())
-    meals = Meal.query.filter_by(user_id=user_id).all()
+    meals = Meal.query.filter_by(user_id=user_id).order_by(Meal.date.desc()).all()
     return jsonify([m.serialize() for m in meals]), 200
 
 @meal_bp.post("/")
@@ -17,7 +17,7 @@ def get_meals():
 def create_meal():
     user_id = int(get_jwt_identity())
     data = request.get_json()
-    meal = Meal(name=data.get("name"), date=data.get("date"), user_id=user_id)
+    meal = Meal(name=data.get("name"), date=date.today().isoformat(), user_id=user_id)
     db.session.add(meal)
     db.session.commit()
     return jsonify(meal.serialize()), 201

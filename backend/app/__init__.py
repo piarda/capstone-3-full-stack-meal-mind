@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -8,14 +8,33 @@ import os
 db = SQLAlchemy()
 jwt = JWTManager()
 
+@jwt.unauthorized_loader
+def unauthorized_callback(err):
+    return jsonify({"error": "Missing or invalid token"}), 401
+
+@jwt.invalid_token_loader
+def invalid_token_callback(err):
+    return jsonify({"error": "Invalid token"}), 422
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
     db.init_app(app)
     jwt.init_app(app)
-    CORS(app, supports_credentials=True)
-
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": "http://localhost:5173"}},
+        supports_credentials=True,
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"]
+    )
+    
+    @app.before_request
+    def handle_options_request():
+        if request.method == "OPTIONS":
+            return jsonify({}), 200
+        
     from app.routes.auth_routes import auth_bp
     from app.routes.food_routes import food_bp
     from app.routes.meal_routes import meal_bp

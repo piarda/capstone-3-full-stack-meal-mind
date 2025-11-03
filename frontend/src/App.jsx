@@ -8,12 +8,19 @@ import Dashboard from "./pages/Dashboard";
 import MealDetails from "./pages/MealDetails";
 import Navbar from "./components/Navbar";
 
-import './App.css'
+import './styles/App.css'
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useContext(AuthContext);
-  if (loading) return <div>Loading...</div>;
-  return user ? children : <Navigate to="/login" />;
+    const { user, loading } = useContext(AuthContext);
+
+    if (loading)
+      return (
+        <div className="flex justify-center items-center h-screen text-xl">
+          Loading...
+        </div>
+      );
+
+    return user ? children : <Navigate to="/login" replace />;
 };
 
 function App() {

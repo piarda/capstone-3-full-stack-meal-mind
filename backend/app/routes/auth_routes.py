@@ -18,7 +18,12 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({"message": "User created successfully"}), 201
+    access_token = create_access_token(identity=str(user.id))
+    return jsonify({
+        "access_token": access_token,
+        "username": user.username,
+        "email": user.email
+    }), 201
 
 @auth_bp.post("/login")
 def login():
@@ -29,11 +34,18 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
 
     access_token = create_access_token(identity=str(user.id))
-    return jsonify({"access_token": access_token, "username": user.username}), 200
+    return jsonify({
+        "access_token": access_token,
+        "username": user.username,
+        "email": user.email
+    }), 200
 
 @auth_bp.get("/me")
 @jwt_required()
 def get_current_user():
     user_id = int(get_jwt_identity())
-    user = User.query.get(user_id)
-    return jsonify({"username": user.username, "email": user.email})
+    user = User.query.get_or_404(user_id)
+    return jsonify({
+        "username": user.username,
+        "email": user.email
+    }), 200

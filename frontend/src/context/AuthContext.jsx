@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import api from "../api/axios";
+import api from "../api/api";
 
 export const AuthContext = createContext();
 
@@ -8,27 +8,37 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const loadUser = async () => {
         const token = localStorage.getItem("token");
-        if (token) {
-            api.get("/auth/me")
-            .then(res => setUser(res.data))
-            .catch(() => localStorage.removeItem("token"))
-            .finally(() => setLoading(false));
-        } else {
+        if (!token) {
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const data = await api.get("/auth/me");
+            setUser(data);
+        } catch (err) {
+            console.error("Error loading user:", err);
+            localStorage.removeItem("token");
+        } finally {
             setLoading(false);
         }
+        };
+
+        loadUser();
     }, []);
 
     const login = async (email, password) => {
-        const res = await api.post("/auth/login", { email, password });
-        localStorage.setItem("token", res.data.access_token);
-        setUser(res.data.user);
+        const data = await api.post("/auth/login", { email, password });
+        localStorage.setItem("token", data.access_token);
+        setUser(data.user || { username: data.username, email: data.email });
     };
 
     const register = async (username, email, password) => {
-        const res = await api.post("/auth/register", { username, email, password });
-        localStorage.setItem("token", res.data.access_token);
-        setUser(res.data.user);
+        const data = await api.post("/auth/register", { username, email, password });
+        localStorage.setItem("token", data.access_token);
+        setUser(data.user || { username: data.username, email: data.email });
     };
 
     const logout = () => {
