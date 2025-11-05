@@ -39,83 +39,64 @@ const FoodCard = ({ food, refreshFoods }) => {
     };
 
     return (
-        <li className="flex justify-between items-center border px-2 py-1 rounded">
+        <li className="flex justify-between items-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 rounded transition-colors duration-300">
         {editing ? (
             <div className="flex flex-wrap gap-2">
-            <input
-                name="name"
-                value={formData.name}
+            {["name", "calories", "protein", "carbs", "fat"].map((field) => (
+                <input
+                key={field}
+                name={field}
+                value={formData[field]}
                 onChange={handleChange}
-                className="border px-2 py-1 rounded"
-            />
-            <input
-                name="calories"
-                value={formData.calories}
-                onChange={handleChange}
-                className="border px-2 py-1 w-20 rounded"
-            />
-            <input
-                name="protein"
-                value={formData.protein}
-                onChange={handleChange}
-                className="border px-2 py-1 w-20 rounded"
-            />
-            <input
-                name="carbs"
-                value={formData.carbs}
-                onChange={handleChange}
-                className="border px-2 py-1 w-20 rounded"
-            />
-            <input
-                name="fat"
-                value={formData.fat}
-                onChange={handleChange}
-                className="border px-2 py-1 w-20 rounded"
-            />
+                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 px-2 py-1 rounded w-24 sm:w-20 focus:ring-2 focus:ring-blue-400 outline-none transition"
+                />
+            ))}
             </div>
         ) : (
-            <span>
+            <span className="text-gray-800 dark:text-gray-200">
             {food.name} — {food.calories} kcal | P:{food.protein} | C:{food.carbs} | F:{food.fat}
             </span>
         )}
 
         <div className="flex gap-2">
             {editing ? (
-                <>
-                    <button
-                    onClick={handleUpdate}
-                    disabled={saving}
-                    className={`bg-green-500 text-white px-2 py-1 rounded ${
-                        saving ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
-                    }`}
-                    >
-                    {saving ? "Saving..." : "Save"}
-                    </button>
-                    <button
-                    onClick={() => {
-                        setEditing(false);
-                        setFormData({ ...food });
-                    }}
-                    className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500"
-                    >
-                    Cancel
-                    </button>
-                </>
-                ) : (
+            <>
                 <button
-                    onClick={() => setEditing(true)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                onClick={handleUpdate}
+                disabled={saving}
+                className={`bg-green-500 text-white px-2 py-1 rounded ${
+                    saving
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-green-600"
+                } transition`}
                 >
-                    Edit
+                {saving ? "Saving..." : "Save"}
                 </button>
-                )}
+                <button
+                onClick={() => {
+                    setEditing(false);
+                    setFormData({ ...food });
+                }}
+                className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition"
+                >
+                Cancel
+                </button>
+            </>
+            ) : (
+            <button
+                onClick={() => setEditing(true)}
+                className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
+            >
+                Edit
+            </button>
+            )}
 
-                <button
-                    onClick={handleDelete}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                >
-                    Delete
-                </button>
+            <button
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+            >
+            Delete
+            </button>
         </div>
         </li>
     );

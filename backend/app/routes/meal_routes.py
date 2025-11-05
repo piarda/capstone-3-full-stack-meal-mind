@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Meal
-from datetime import date
+from datetime import date, timedelta
 
 meal_bp = Blueprint("meal", __name__)
 
@@ -68,3 +68,30 @@ def daily_summary():
             total["fat"] += food.fat or 0
 
     return jsonify(total), 200
+
+@meal_bp.get("/summary/week")
+@jwt_required()
+def weekly_summary():
+    user_id = int(get_jwt_identity())
+    today = date.today()
+    week_ago = today - timedelta(days=6)
+
+    summaries = []
+    for i in range(7):
+        day = (week_ago + timedelta(days=i)).isoformat()
+        meals = Meal.query.filter_by(user_id=user_id, date=day).all()
+
+        totals = {"date": day, "calories": 0, "protein": 0, "carbs": 0, "fat": 0}
+
+        for meal in meals:
+            for food in meal.food_items:
+                totals["calories"] += food.calories or 0
+                totals["protein"] += food.protein or 0
+                totals["carbs"] += food.carbs or 0
+                totals["fat"] += food.fat or 0
+
+        summaries.append(totals)
+
+    summaries.sort(key=lambda x: x["date"])
+
+    return jsonify(summaries), 200

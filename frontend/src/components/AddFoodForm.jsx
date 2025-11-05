@@ -42,50 +42,38 @@ const AddFoodForm = ({ mealId, refreshFoods }) => {
     return (
         <form
         onSubmit={handleSubmit}
-        className="flex flex-wrap gap-2 mb-3 items-center"
+        className="flex flex-wrap gap-2 mb-3 items-center bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors"
         >
         <input
             name="name"
             value={formData.name}
             onChange={handleChange}
             placeholder="Food name"
-            className="border px-2 py-1 rounded flex-1"
+            className="border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 px-2 py-1 rounded flex-1 focus:ring-2 focus:ring-blue-400 outline-none transition"
             required
         />
-        <input
-            name="calories"
-            value={formData.calories}
+        {["calories", "protein", "carbs", "fat"].map((field) => (
+            <input
+            key={field}
+            name={field}
+            value={formData[field]}
             onChange={handleChange}
-            placeholder="Cals"
-            className="border px-2 py-1 w-20 rounded"
-        />
-        <input
-            name="protein"
-            value={formData.protein}
-            onChange={handleChange}
-            placeholder="P"
-            className="border px-2 py-1 w-20 rounded"
-        />
-        <input
-            name="carbs"
-            value={formData.carbs}
-            onChange={handleChange}
-            placeholder="C"
-            className="border px-2 py-1 w-20 rounded"
-        />
-        <input
-            name="fat"
-            value={formData.fat}
-            onChange={handleChange}
-            placeholder="F"
-            className="border px-2 py-1 w-20 rounded"
-        />
+            placeholder={
+                field === "calories"
+                ? "Cals"
+                : field.charAt(0).toUpperCase()
+            }
+            className="border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 px-2 py-1 w-20 rounded text-center focus:ring-2 focus:ring-blue-400 outline-none transition"
+            />
+        ))}
         <button
             type="submit"
             disabled={loading}
             className={`${
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
-            } text-white px-3 py-1 rounded`}
+            loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-3 py-1 rounded transition`}
         >
             {loading ? "Adding..." : "Add"}
         </button>

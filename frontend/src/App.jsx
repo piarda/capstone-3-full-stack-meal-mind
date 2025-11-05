@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import MealDetails from "./pages/MealDetails";
 import Navbar from "./components/Navbar";
 
-import './styles/App.css'
+import "./styles/index.css";
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useContext(AuthContext);

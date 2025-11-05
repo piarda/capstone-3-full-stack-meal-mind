@@ -26,35 +26,31 @@ const FoodList = ({ mealId }) => {
     };
 
     return (
-        <div className="mt-2 border-t pt-2">
-            <button
-                onClick={handleToggle}
-                className="text-blue-600 hover:underline mb-2"
-            >
-                {expanded ? "Hide Foods" : "View Foods"}
-            </button>
+        <div className="mt-2 border-t border-gray-200 dark:border-gray-700 pt-2 transition-colors duration-300">
+        <button
+            onClick={handleToggle}
+            className="text-blue-600 dark:text-blue-400 hover:underline mb-2"
+        >
+            {expanded ? "Hide Foods" : "View Foods"}
+        </button>
 
-            {expanded && (
-                <>
-                    <AddFoodForm mealId={mealId} refreshFoods={fetchFoods} />
+        {expanded && (
+            <>
+            <AddFoodForm mealId={mealId} refreshFoods={fetchFoods} />
 
-                    {loading ? (
-                        <p className="text-gray-500 italic">Loading foods...</p>
-                    ) : foods.length === 0 ? (
-                        <p className="text-gray-500">No food items added yet.</p>
-                    ) : (
-                        <ul className="space-y-1">
-                            {foods.map((food) => (
-                                <FoodCard
-                                    key={food.id}
-                                    food={food}
-                                    refreshFoods={fetchFoods}
-                                />
-                            ))}
-                        </ul>
-                    )}
-                </>
+            {loading ? (
+                <p className="text-gray-500 dark:text-gray-400 italic">Loading foods...</p>
+            ) : foods.length === 0 ? (
+                <p className="text-gray-500 dark:text-gray-400">No food items added yet.</p>
+            ) : (
+                <ul className="space-y-1">
+                {foods.map((food) => (
+                    <FoodCard key={food.id} food={food} refreshFoods={fetchFoods} />
+                ))}
+                </ul>
             )}
+            </>
+        )}
         </div>
     );
 };

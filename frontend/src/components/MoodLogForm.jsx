@@ -40,34 +40,42 @@ const MoodLogForm = () => {
         }
     };
 
-    if (loading) return <p className="text-gray-500">Loading mood log...</p>;
+    if (loading)
+        return <p className="text-gray-500 dark:text-gray-400">Loading mood log...</p>;
 
     return (
-        <div className="border-t pt-4 mt-6">
-        <h2 className="text-2xl font-semibold mb-2">Mood & Energy</h2>
-        <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 items-center">
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-6 transition-colors duration-300">
+        <h2 className="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
+            Mood & Energy
+        </h2>
+
+        <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 items-end">
             <div>
-            <label className="block text-sm text-gray-700 mb-1">Mood (1-5)</label>
+            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+                Mood (1-5)
+            </label>
             <input
                 type="number"
                 min="1"
                 max="5"
                 value={mood}
                 onChange={(e) => setMood(e.target.value)}
-                className="border rounded px-2 py-1 w-20 text-center"
+                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded px-2 py-1 w-20 text-center focus:ring-2 focus:ring-indigo-400 outline-none transition"
                 required
             />
             </div>
 
             <div>
-            <label className="block text-sm text-gray-700 mb-1">Energy (1-5)</label>
+            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+                Energy (1-5)
+            </label>
             <input
                 type="number"
                 min="1"
                 max="5"
                 value={energy}
                 onChange={(e) => setEnergy(e.target.value)}
-                className="border rounded px-2 py-1 w-20 text-center"
+                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded px-2 py-1 w-20 text-center focus:ring-2 focus:ring-indigo-400 outline-none transition"
                 required
             />
             </div>
@@ -81,7 +89,7 @@ const MoodLogForm = () => {
         </form>
 
         {message && (
-            <p className="mt-2 text-sm text-green-600">{message}</p>
+            <p className="mt-2 text-sm text-green-600 dark:text-green-400">{message}</p>
         )}
         </div>
     );
