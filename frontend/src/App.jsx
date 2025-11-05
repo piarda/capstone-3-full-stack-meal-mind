@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MealDetails from "./pages/MealDetails";
 import Navbar from "./components/Navbar";
+import Meals from "./pages/Meals";
 
 import "./styles/index.css";
 
@@ -36,6 +37,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/meals"
+            element={
+              <ProtectedRoute>
+                <Meals />
               </ProtectedRoute>
             }
           />

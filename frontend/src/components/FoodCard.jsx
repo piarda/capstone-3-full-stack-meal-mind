@@ -39,7 +39,7 @@ const FoodCard = ({ food, refreshFoods }) => {
     };
 
     return (
-        <li className="flex justify-between items-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 rounded transition-colors duration-300">
+        <li className="flex flex-col sm:flex-row sm:justify-between sm:items-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded px-3 py-2 gap-2 transition-colors duration-300">
         {editing ? (
             <div className="flex flex-wrap gap-2">
             {["name", "calories", "protein", "carbs", "fat"].map((field) => (
@@ -48,17 +48,17 @@ const FoodCard = ({ food, refreshFoods }) => {
                 name={field}
                 value={formData[field]}
                 onChange={handleChange}
-                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 px-2 py-1 rounded w-24 sm:w-20 focus:ring-2 focus:ring-blue-400 outline-none transition"
+                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 px-2 py-1 rounded w-24 sm:w-20 text-center focus:ring-2 focus:ring-blue-400 outline-none transition"
                 />
             ))}
             </div>
         ) : (
-            <span className="text-gray-800 dark:text-gray-200">
+            <span className="text-gray-800 dark:text-gray-200 break-words">
             {food.name} — {food.calories} kcal | P:{food.protein} | C:{food.carbs} | F:{food.fat}
             </span>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
             {editing ? (
             <>
                 <button

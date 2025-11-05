@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Meal
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 meal_bp = Blueprint("meal", __name__)
+VALID_MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack", "Other"]
 
 @meal_bp.get("/")
 @jwt_required()
@@ -17,10 +18,32 @@ def get_meals():
 def create_meal():
     user_id = int(get_jwt_identity())
     data = request.get_json()
-    meal = Meal(name=data.get("name"), date=date.today().isoformat(), user_id=user_id)
-    db.session.add(meal)
-    db.session.commit()
+
+    meal_type = data.get("meal_type", "Other")
+    if meal_type not in VALID_MEAL_TYPES:
+        return jsonify({"error": "Invalid meal type"}), 400
+
+    try:
+        date_value = datetime.strptime(data.get("date", date.today().isoformat()), "%Y-%m-%d").date().isoformat()
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
+
+    meal = Meal(
+        name=data.get("name") or meal_type,
+        meal_type=meal_type,
+        date=date_value,
+        user_id=user_id,
+    )
+
+    try:
+        db.session.add(meal)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
     return jsonify(meal.serialize()), 201
+
 
 @meal_bp.put("/<int:meal_id>")
 @jwt_required()
@@ -30,12 +53,17 @@ def update_meal(meal_id):
 
     if meal.user_id != user_id:
         return jsonify({"error": "Unauthorized"}), 403
-    
-    data = request.get_json()
-    meal.name = data.get("name", meal.name)
-    meal.date = data.get("date", meal.date)
-    db.session.commit()
 
+    data = request.get_json()
+
+    if "meal_type" in data and data["meal_type"] not in VALID_MEAL_TYPES:
+        return jsonify({"error": "Invalid meal type"}), 400
+
+    meal.name = data.get("name", meal.name)
+    meal.meal_type = data.get("meal_type", meal.meal_type)
+    meal.date = data.get("date", meal.date)
+
+    db.session.commit()
     return jsonify(meal.serialize()), 200
 
 @meal_bp.delete("/<int:meal_id>")

@@ -54,15 +54,23 @@ const Navbar = () => {
             {user ? (
             <>
                 <span className="block px-4 py-2 md:mr-4 md:ml-2 text-white font-medium">
-                Welcome, {user.username}!
+                    Welcome, {user.username}!
                 </span>
 
                 <Link
-                to="/dashboard"
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-2 hover:bg-blue-700 dark:hover:bg-gray-700 md:hover:bg-transparent md:hover:text-gray-200 transition"
+                    to="/dashboard"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 hover:bg-blue-700 dark:hover:bg-gray-700 md:hover:bg-transparent md:hover:text-gray-200 transition"
                 >
-                Dashboard
+                    Dashboard
+                </Link>
+
+                <Link
+                    to="/meals"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 hover:bg-blue-700 md:hover:bg-transparent md:hover:text-gray-200 transition"
+                >
+                    Meals
                 </Link>
 
                 <button

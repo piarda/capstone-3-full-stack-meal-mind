@@ -1,6 +1,6 @@
-from . import db
+from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date
+from datetime import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,17 +23,21 @@ class User(db.Model):
 class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.String(20))
+    date = db.Column(db.String(20), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    food_items = db.relationship("FoodItem", backref="meal", lazy=True, cascade="all, delete")
+    food_items = db.relationship("FoodItem", backref="meal", lazy=True, cascade="all, delete, delete-orphan")
+    meal_type = db.Column(db.String(20), nullable=False, default="Other")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
+            "meal_type": self.meal_type,
             "date": self.date,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "food_items": [f.serialize() for f in self.food_items],
             "user_id": self.user_id
-            # "foods": [f.serialize() for f in self.food_items] <<< if I want to fetch meals and their foods together later
         }
 
 class FoodItem(db.Model):

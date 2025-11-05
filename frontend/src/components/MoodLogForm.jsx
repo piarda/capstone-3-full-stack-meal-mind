@@ -44,12 +44,12 @@ const MoodLogForm = () => {
         return <p className="text-gray-500 dark:text-gray-400">Loading mood log...</p>;
 
     return (
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-6 transition-colors duration-300">
-        <h2 className="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
-            Mood & Energy
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 transition-colors duration-300">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+            🧠 Mood & Energy
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 items-end">
+        <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-end">
             <div>
             <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                 Mood (1-5)
@@ -60,7 +60,7 @@ const MoodLogForm = () => {
                 max="5"
                 value={mood}
                 onChange={(e) => setMood(e.target.value)}
-                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded px-2 py-1 w-20 text-center focus:ring-2 focus:ring-indigo-400 outline-none transition"
+                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 rounded px-2 py-1 w-20 text-center focus:ring-2 focus:ring-blue-400 outline-none transition"
                 required
             />
             </div>
@@ -75,21 +75,23 @@ const MoodLogForm = () => {
                 max="5"
                 value={energy}
                 onChange={(e) => setEnergy(e.target.value)}
-                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded px-2 py-1 w-20 text-center focus:ring-2 focus:ring-indigo-400 outline-none transition"
+                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 rounded px-2 py-1 w-20 text-center focus:ring-2 focus:ring-blue-400 outline-none transition"
                 required
             />
             </div>
 
             <button
             type="submit"
-            className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50"
             >
             Save
             </button>
         </form>
 
         {message && (
-            <p className="mt-2 text-sm text-green-600 dark:text-green-400">{message}</p>
+            <p className="mt-3 text-sm text-green-600 dark:text-green-400 italic">
+            {message}
+            </p>
         )}
         </div>
     );

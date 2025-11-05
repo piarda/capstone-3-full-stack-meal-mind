@@ -29,9 +29,9 @@ const Dashboard = () => {
         setSuggestions(data.suggestions);
     };
 
-    const addMeal = async (name) => {
-        const data = await api.post("/meals", { name });
-        setMeals((prev) => [...prev, { id: data.id, name: data.name, date: data.date }]);
+    const addMeal = async ({ meal_type, date }) => {
+        const data = await api.post("/meals", { meal_type, date });
+        setMeals((prev) => [...prev, data]);
         await fetchSummary();
         await fetchSuggestions();
     };
@@ -53,102 +53,98 @@ const Dashboard = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-10 transition-colors duration-300">
-        <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 transition-colors">
-            Welcome back, {user?.username || "User"}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-2">
-            Here’s your daily nutrition and mood overview.
-            </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-                🍽️ Today’s Summary
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-4">
-                <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3">
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Calories</p>
-                <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                    {summary.calories || 0}
+            <div className="text-center mb-10">
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 transition-colors">
+                    Welcome back, {user?.username || "User"}
+                </h1>
+                <p className="text-gray-500 dark:text-gray-400 mt-2">
+                    Here's your daily nutrition and mood overview.
                 </p>
-                </div>
-                <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-3">
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Protein</p>
-                <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                    {summary.protein || 0}g
-                </p>
-                </div>
-                <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-3">
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Carbs</p>
-                <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
-                    {summary.carbs || 0}g
-                </p>
-                </div>
-                <div className="bg-red-50 dark:bg-red-900/30 rounded-lg p-3">
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Fat</p>
-                <p className="text-xl font-bold text-red-600 dark:text-red-400">
-                    {summary.fat || 0}g
-                </p>
-                </div>
             </div>
-            <NutritionSummaryChart summary={summary} />
-            </section>
 
-            <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
-            <div className="flex justify-between items-center mb-3">
-                <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                🥗 Meals
-                </h2>
-                <AddMealForm addMeal={addMeal} />
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
+                    <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                        🍽️ Today's Summary
+                    </h2>
+                    <hr className="border-gray-300 dark:border-gray-700 mb-4" />
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-4">
+                        {[
+                            { label: "Calories", value: summary.calories || 0, color: "blue" },
+                            { label: "Protein", value: `${summary.protein || 0}g`, color: "green" },
+                            { label: "Carbs", value: `${summary.carbs || 0}g`, color: "yellow" },
+                            { label: "Fat", value: `${summary.fat || 0}g`, color: "red" },
+                        ].map(({ label, value, color }) => (
+                            <div key={label} className={`bg-${color}-50 dark:bg-${color}-900/30 rounded-lg p-3`}>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm">{label}</p>
+                                <p className={`text-xl font-bold text-${color}-600 dark:text-${color}-400`}>
+                                    {value}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                    <NutritionSummaryChart summary={summary} />
+                </section>
+
+                <section className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 transition-colors duration-300">
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-3 flex items-center gap-2">
+                        🥗 Meals
+                    </h2>
+                    <hr className="border-gray-300 dark:border-gray-700 mb-4" />
+
+                    <div className="mb-4">
+                        <AddMealForm addMeal={addMeal} />
+                    </div>
+
+                    {meals.length === 0 ? (
+                        <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                            No meals logged yet.
+                        </p>
+                    ) : (
+                        <ul className="space-y-3">
+                            {meals.map((meal) => (
+                                <MealCard
+                                    key={meal.id}
+                                    meal={meal}
+                                    refreshMeals={async () => {
+                                        await fetchMeals();
+                                        await fetchSummary();
+                                        await fetchSuggestions();
+                                    }}
+                                />
+                            ))}
+                        </ul>
+                    )}
+                </section>
+
+                <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
+                    <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                        🧠 Mood Log
+                    </h2>
+                    <MoodLogForm />
+                </section>
+
+                <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 xl:col-span-2 transition-colors">
+                    <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                        📊 7-Day Nutrition Trend
+                    </h2>
+                    <hr className="border-gray-300 dark:border-gray-700 mb-4" />
+                    <NutritionTrendChart />
+                </section>
+
+                <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
+                    <h2 className="text-2xl font-semibold mb-3 text-gray-800 dark:text-gray-100">
+                        💡 Suggestions
+                    </h2>
+                    <hr className="border-gray-300 dark:border-gray-700 mb-4" />
+                    <ul className="list-disc list-inside text-gray-600 dark:text-gray-300 space-y-2">
+                        {suggestions.map((s, idx) => (
+                            <li key={idx}>{s}</li>
+                        ))}
+                    </ul>
+                </section>
             </div>
-            {meals.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 text-center py-4">
-                No meals logged yet.
-                </p>
-            ) : (
-                <ul className="space-y-3">
-                {meals.map((meal) => (
-                    <MealCard
-                    key={meal.id}
-                    meal={meal}
-                    refreshMeals={async () => {
-                        await fetchMeals();
-                        await fetchSummary();
-                        await fetchSuggestions();
-                    }}
-                    />
-                ))}
-                </ul>
-            )}
-            </section>
-
-            <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-                🧠 Mood Log
-            </h2>
-            <MoodLogForm />
-            </section>
-
-            <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 xl:col-span-2 transition-colors">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-                📊 7-Day Nutrition Trend
-            </h2>
-            <NutritionTrendChart />
-            </section>
-
-            <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
-            <h2 className="text-2xl font-semibold mb-3 text-gray-800 dark:text-gray-100">
-                💡 Suggestions
-            </h2>
-            <ul className="list-disc list-inside text-gray-600 dark:text-gray-300 space-y-2">
-                {suggestions.map((s, idx) => (
-                <li key={idx}>{s}</li>
-                ))}
-            </ul>
-            </section>
-        </div>
         </div>
     );
 };
