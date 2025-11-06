@@ -3,7 +3,7 @@ import api from "../api/api";
 import AddFoodForm from "./AddFoodForm";
 import FoodCard from "./FoodCard";
 
-const FoodList = ({ mealId }) => {
+const FoodList = ({ mealId, refreshDashboard }) => {
     const [foods, setFoods] = useState([]);
     const [expanded, setExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -13,6 +13,7 @@ const FoodList = ({ mealId }) => {
         try {
             const data = await api.get(`/foods/${mealId}`);
             setFoods(data);
+            if (refreshDashboard) refreshDashboard();
         } catch (err) {
             console.error("Error fetching foods:", err);
         } finally {

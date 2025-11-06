@@ -13,10 +13,18 @@ const Dashboard = () => {
     const [summary, setSummary] = useState({});
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [trendRefresh, setTrendRefresh] = useState(0);
 
     const fetchMeals = async () => {
+    try {
         const data = await api.get("/meals");
-        setMeals(data);
+        const today = new Date().toISOString().split("T")[0];
+        const todaysMeals = data.filter((meal) => meal.date === today);
+        setMeals(todaysMeals);
+    } catch (err) {
+        console.error("Error loading meals:", err);
+    }
     };
 
     const fetchSummary = async () => {
@@ -34,6 +42,7 @@ const Dashboard = () => {
         setMeals((prev) => [...prev, data]);
         await fetchSummary();
         await fetchSuggestions();
+        setRefreshTrigger((prev) => prev + 1);
     };
 
     useEffect(() => {
@@ -70,21 +79,33 @@ const Dashboard = () => {
                     <hr className="border-gray-300 dark:border-gray-700 mb-4" />
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-4">
-                        {[
-                            { label: "Calories", value: summary.calories || 0, color: "blue" },
-                            { label: "Protein", value: `${summary.protein || 0}g`, color: "green" },
-                            { label: "Carbs", value: `${summary.carbs || 0}g`, color: "yellow" },
-                            { label: "Fat", value: `${summary.fat || 0}g`, color: "red" },
-                        ].map(({ label, value, color }) => (
-                            <div key={label} className={`bg-${color}-50 dark:bg-${color}-900/30 rounded-lg p-3`}>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">{label}</p>
-                                <p className={`text-xl font-bold text-${color}-600 dark:text-${color}-400`}>
-                                    {value}
-                                </p>
-                            </div>
-                        ))}
+                        <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Calories</p>
+                            <p className="text-xl font-bold text-blue-500 dark:text-blue-400">
+                                {summary.calories || 0}
+                            </p>
+                        </div>
+                        <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-3">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Protein</p>
+                            <p className="text-xl font-bold text-green-500 dark:text-green-400">
+                                {summary.protein || 0}g
+                            </p>
+                        </div>
+                        <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-3">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Carbs</p>
+                            <p className="text-xl font-bold text-yellow-500 dark:text-yellow-400">
+                                {summary.carbs || 0}g
+                            </p>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-900/30 rounded-lg p-3">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Fat</p>
+                            <p className="text-xl font-bold text-red-500 dark:text-red-400">
+                                {summary.fat || 0}g
+                            </p>
+                        </div>
                     </div>
-                    <NutritionSummaryChart summary={summary} />
+
+                    <NutritionSummaryChart summary={summary} refreshTrigger={refreshTrigger} />
                 </section>
 
                 <section className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 transition-colors duration-300">
@@ -111,16 +132,22 @@ const Dashboard = () => {
                                         await fetchMeals();
                                         await fetchSummary();
                                         await fetchSuggestions();
+                                        setTrendRefresh(prev => prev + 1);
                                     }}
                                 />
                             ))}
                         </ul>
                     )}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-6 italic leading-relaxed">
+                        Showing meals logged for today only.
+                        <br />
+                        View all meals on the <strong>Meals</strong> page.
+                    </p>
                 </section>
 
                 <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
                     <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-                        🧠 Mood Log
+                        🧠 Mood & Energy
                     </h2>
                     <MoodLogForm />
                 </section>
@@ -130,7 +157,7 @@ const Dashboard = () => {
                         📊 7-Day Nutrition Trend
                     </h2>
                     <hr className="border-gray-300 dark:border-gray-700 mb-4" />
-                    <NutritionTrendChart />
+                    <NutritionTrendChart refreshTrigger={trendRefresh} />
                 </section>
 
                 <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">

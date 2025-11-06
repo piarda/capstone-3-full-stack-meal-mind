@@ -1,11 +1,11 @@
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import {
-    Chart as ChartJS,
-    ArcElement,
-    Tooltip,
-    Legend,
-    } from "chart.js";
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -16,15 +16,23 @@ const NutritionSummaryChart = ({ summary }) => {
 
     const { protein = 0, carbs = 0, fat = 0, calories = 0 } = summary;
 
+    const backgroundColors = [
+        "#3b82f6",
+        "#22c55e",
+        "#eab308",
+        "#ef4444",
+    ];
+
     const data = {
-        labels: ["Protein", "Carbs", "Fat"],
+        labels: ["Calories", "Protein", "Carbs", "Fat"],
         datasets: [
         {
             label: "Macros (g)",
-            data: [protein, carbs, fat],
-            backgroundColor: ["#3b82f6", "#22c55e", "#facc15"],
+            data: [calories, protein, carbs, fat],
+            backgroundColor: backgroundColors,
             borderColor: "#fff",
             borderWidth: 2,
+            cutout: "70%",
         },
         ],
     };
@@ -32,22 +40,41 @@ const NutritionSummaryChart = ({ summary }) => {
     const options = {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: "70%",
         plugins: {
-        legend: { display: true, position: "bottom" },
-        tooltip: { callbacks: {
+        legend: {
+            display: true,
+            position: "bottom",
+            labels: {
+            usePointStyle: true,
+            padding: 15,
+            generateLabels: (chart) => {
+                const dataset = chart.data.datasets[0];
+                return chart.data.labels.map((label, i) => ({
+                text: label,
+                fillStyle: dataset.backgroundColor[i],
+                strokeStyle: dataset.backgroundColor[i],
+                fontColor: dataset.backgroundColor[i],
+                }));
+            },
+            },
+        },
+        tooltip: {
+            callbacks: {
             label: (context) => `${context.label}: ${context.formattedValue}g`,
-        }},
+            },
+        },
         },
     };
 
     return (
-        <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center justify-center w-full h-80">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center justify-center w-full h-80 transition-colors duration-300">
         <div className="relative w-full h-full">
             <Doughnut data={data} options={options} />
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <p className="text-lg font-semibold">{calories.toFixed(0)} kcal</p>
-            <p className="text-gray-500 text-sm">total</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {calories.toFixed(0)} kcal
+            </p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">total</p>
             </div>
         </div>
         </div>

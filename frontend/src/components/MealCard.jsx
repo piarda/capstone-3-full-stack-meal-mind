@@ -108,7 +108,7 @@ const MealCard = ({ meal, refreshMeals }) => {
                 )}
             </div>
 
-            <FoodList mealId={meal.id} />
+            <FoodList mealId={meal.id} refreshDashboard={refreshMeals} />
         </li>
     );
 };

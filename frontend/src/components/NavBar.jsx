@@ -73,6 +73,13 @@ const Navbar = () => {
                     Meals
                 </Link>
 
+                <Link
+                    to="/mood-trends"
+                    className="hover:text-blue-500 transition-colors duration-200"
+                >
+                    Mood & Energy
+                </Link>
+
                 <button
                 onClick={() => {
                     handleLogout();

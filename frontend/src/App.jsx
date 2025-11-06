@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import MealDetails from "./pages/MealDetails";
 import Navbar from "./components/Navbar";
 import Meals from "./pages/Meals";
+import MoodTrends from "./pages/MoodTrends";
 
 import "./styles/index.css";
 
@@ -56,6 +57,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/mood-trends" element={<MoodTrends />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </Router>
