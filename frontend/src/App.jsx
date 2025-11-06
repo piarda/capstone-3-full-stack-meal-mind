@@ -5,7 +5,6 @@ import { AuthProvider, AuthContext } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
-import MealDetails from "./pages/MealDetails";
 import Navbar from "./components/Navbar";
 import Meals from "./pages/Meals";
 import MoodTrends from "./pages/MoodTrends";
@@ -46,14 +45,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <Meals />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/meals/:id"
-            element={
-              <ProtectedRoute>
-                <MealDetails />
               </ProtectedRoute>
             }
           />

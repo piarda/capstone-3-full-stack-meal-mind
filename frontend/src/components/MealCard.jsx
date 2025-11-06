@@ -34,7 +34,7 @@ const MealCard = ({ meal, refreshMeals }) => {
     };
 
     return (
-        <li className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col gap-2 transition-colors duration-300">
+        <div className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col gap-2 transition-colors duration-300">
             <div className="flex flex-wrap justify-between items-center gap-2">
                 {editing ? (
                     <div className="flex flex-wrap gap-2 w-full">
@@ -109,7 +109,7 @@ const MealCard = ({ meal, refreshMeals }) => {
             </div>
 
             <FoodList mealId={meal.id} refreshDashboard={refreshMeals} />
-        </li>
+        </div>
     );
 };
 

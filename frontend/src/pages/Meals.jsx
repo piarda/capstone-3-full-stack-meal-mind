@@ -62,7 +62,6 @@ const Meals = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 transition-colors duration-300">
-      {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
           🥗 Your Meals
@@ -72,11 +71,10 @@ const Meals = () => {
         </p>
       </div>
 
-      {/* Search Bar */}
     <div className="mb-6 relative max-w-md mx-auto">
     <input
         type="text"
-        placeholder="Search meals by type or date, or food name..."
+        placeholder="Search meals by type, date, or food name..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-400 outline-none transition"
@@ -92,12 +90,10 @@ const Meals = () => {
     )}
     </div>
 
-      {/* Add Meal Form */}
       <div className="mb-6">
         <AddMealForm addMeal={addMeal} />
       </div>
 
-      {/* Meals List */}
       {filteredMeals.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 text-center border border-gray-200 dark:border-gray-700">
           <p className="text-gray-500 dark:text-gray-400">

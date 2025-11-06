@@ -6,6 +6,7 @@ import MealCard from "../components/MealCard";
 import MoodLogForm from "../components/MoodLogForm";
 import NutritionSummaryChart from "../components/NutritionSummaryChart";
 import NutritionTrendChart from "../components/NutritionTrendChart";
+import Suggestions from "../components/Suggestions";
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
@@ -67,7 +68,7 @@ const Dashboard = () => {
                     Welcome back, {user?.username || "User"}
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-2">
-                    Here's your daily nutrition and mood overview.
+                    Here's your daily nutrition and mood/energy overview.
                 </p>
             </div>
 
@@ -160,17 +161,8 @@ const Dashboard = () => {
                     <NutritionTrendChart refreshTrigger={trendRefresh} />
                 </section>
 
-                <section className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow p-6 transition-colors">
-                    <h2 className="text-2xl font-semibold mb-3 text-gray-800 dark:text-gray-100">
-                        💡 Suggestions
-                    </h2>
-                    <hr className="border-gray-300 dark:border-gray-700 mb-4" />
-                    <ul className="list-disc list-inside text-gray-600 dark:text-gray-300 space-y-2">
-                        {suggestions.map((s, idx) => (
-                            <li key={idx}>{s}</li>
-                        ))}
-                    </ul>
-                </section>
+                <Suggestions />
+
             </div>
         </div>
     );

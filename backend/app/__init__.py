@@ -3,11 +3,13 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from dotenv import load_dotenv
 from .config import Config
 import os
 
 db = SQLAlchemy()
 jwt = JWTManager()
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
