@@ -44,12 +44,14 @@ def create_app():
     from app.routes.meal_routes import meal_bp
     from app.routes.suggestion_routes import suggestion_bp
     from app.routes.mood_routes import mood_bp
+    from app.routes.user_routes import user_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(food_bp, url_prefix="/api/foods")
     app.register_blueprint(meal_bp, url_prefix="/api/meals")
     app.register_blueprint(suggestion_bp, url_prefix="/api/suggestions")
     app.register_blueprint(mood_bp, url_prefix="/api/moods")
+    app.register_blueprint(user_bp, url_prefix="/api/user")
 
     with app.app_context():
         db.create_all()

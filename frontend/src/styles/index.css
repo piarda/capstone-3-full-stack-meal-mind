@@ -14,7 +14,7 @@
 }
 
 body {
-  @apply bg-gray-50 text-gray-900 flex flex-col min-h-screen;
+  @apply bg-gray-100 text-gray-900 flex flex-col min-h-screen;
   margin: 0;
   @apply transition-colors duration-300;
 }

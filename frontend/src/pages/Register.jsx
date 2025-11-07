@@ -16,50 +16,54 @@ const Register = () => {
         setError("");
 
         try {
-        await register(username, email, password);
-        navigate("/dashboard");
+            await register(username, email, password);
+            navigate("/dashboard");
         } catch (err) {
-        console.error(err);
-        setError(err.message || "Registration failed. Please try again.");
+            console.error(err);
+            setError(err.message || "Registration failed. Please try again.");
         }
     };
 
     return (
-        <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-        <h2 className="text-2xl font-bold mb-4">Register</h2>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="p-2 border rounded"
-            required
-            />
-            <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="p-2 border rounded"
-            required
-            />
-            <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="p-2 border rounded"
-            required
-            />
-            <button
-            type="submit"
-            className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-            >
-            Register
-            </button>
-        </form>
+        <div className="max-w-md mx-auto mt-16 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+                Register
+            </h2>
+
+            {error && <p className="text-red-500 mb-2">{error}</p>}
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
+                />
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
+                />
+                <button
+                    type="submit"
+                    className="bg-green-500 text-white p-3 rounded-md font-medium hover:bg-green-600 dark:hover:bg-green-700 transition"
+                >
+                    Register
+                </button>
+            </form>
         </div>
     );
 };

@@ -10,14 +10,27 @@ async function request(endpoint, options = {}) {
 
     const config = { ...options, headers };
 
-    const res = await fetch(`${BASE_URL}${endpoint}`, config);
+    try {
+        const res = await fetch(`${BASE_URL}${endpoint}`, config);
 
-    if (!res.ok) {
-        const error = await res.json().catch(() => ({ msg: res.statusText }));
-        throw new Error(error.msg || "Request failed");
+        if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        const message =
+            errorData?.msg ||
+            errorData?.message ||
+            res.statusText ||
+            "Request failed";
+        throw new Error(message);
+        }
+
+        if (res.status === 204) return null;
+
+        const data = await res.json().catch(() => ({}));
+        return data;
+    } catch (err) {
+        console.error(`API Error [${options.method || "GET"} ${endpoint}]:`, err);
+        throw err;
     }
-
-    return res.json();
 }
 
 export const api = {
