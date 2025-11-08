@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from app.models import db, MoodLog, Meal, FoodItem
 from sqlalchemy import func
 
@@ -10,9 +10,9 @@ mood_bp = Blueprint("mood", __name__)
 @jwt_required()
 def get_today_mood():
     user_id = int(get_jwt_identity())
-    today_str = date.today().isoformat()
+    today_value = date.today()
 
-    mood = MoodLog.query.filter_by(user_id=user_id, date=today_str).first()
+    mood = MoodLog.query.filter_by(user_id=user_id, date=today_value).first()
     if not mood:
         return jsonify({"message": "No mood log for today"}), 404
 
@@ -23,12 +23,19 @@ def get_today_mood():
 def log_mood():
     user_id = int(get_jwt_identity())
     data = request.get_json()
-    date_str = data.get("date") or date.today().isoformat()
 
     if not data or "mood_score" not in data or "energy_level" not in data:
         return jsonify({"error": "Missing mood_score or energy_level"}), 400
 
-    mood = MoodLog.query.filter_by(user_id=user_id, date=date_str).first()
+    try:
+        if "date" in data and data["date"]:
+            date_value = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        else:
+            date_value = date.today()
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
+
+    mood = MoodLog.query.filter_by(user_id=user_id, date=date_value).first()
 
     if mood:
         mood.mood_score = data["mood_score"]
@@ -38,7 +45,7 @@ def log_mood():
             user_id=user_id,
             mood_score=data["mood_score"],
             energy_level=data["energy_level"],
-            date=date_str
+            date=date_value
         )
         db.session.add(mood)
 
@@ -49,11 +56,13 @@ def log_mood():
 @jwt_required()
 def get_mood_trends():
     user_id = int(get_jwt_identity())
-    logs = (MoodLog.query
+    logs = (
+        MoodLog.query
         .filter_by(user_id=user_id)
         .order_by(MoodLog.date.desc())
         .limit(7)
-        .all())
+        .all()
+    )
 
     return jsonify([m.serialize() for m in logs]), 200
 
@@ -69,7 +78,7 @@ def get_combined_mood_nutrition_trends():
         MoodLog.query
         .filter(
             MoodLog.user_id == user_id,
-            MoodLog.date >= start_date.isoformat()
+            MoodLog.date >= start_date
         )
         .all()
     )
@@ -86,7 +95,7 @@ def get_combined_mood_nutrition_trends():
         .join(FoodItem, FoodItem.meal_id == Meal.id)
         .filter(
             Meal.user_id == user_id,
-            Meal.date >= start_date.isoformat()
+            Meal.date >= start_date
         )
         .group_by(Meal.date)
         .all()
@@ -95,12 +104,12 @@ def get_combined_mood_nutrition_trends():
 
     combined = []
     for i in range(7):
-        d = (start_date + timedelta(days=i)).isoformat()
+        d = start_date + timedelta(days=i)
         mood = mood_map.get(d)
         nutrition = nutrition_map.get(d)
 
         combined.append({
-            "date": d,
+            "date": d.isoformat(),
             "mood_score": mood.mood_score if mood else None,
             "energy_level": mood.energy_level if mood else None,
             "calories": float(nutrition.calories or 0) if nutrition else 0,

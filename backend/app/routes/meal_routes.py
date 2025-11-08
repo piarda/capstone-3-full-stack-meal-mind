@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Meal
 from datetime import date, datetime, timedelta
+from sqlalchemy.orm import joinedload
 
 meal_bp = Blueprint("meal", __name__)
 VALID_MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack", "Other"]
@@ -10,7 +11,12 @@ VALID_MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack", "Other"]
 @jwt_required()
 def get_meals():
     user_id = int(get_jwt_identity())
-    meals = Meal.query.filter_by(user_id=user_id).order_by(Meal.date.desc()).all()
+    meals = (
+        Meal.query.options(joinedload(Meal.food_items))
+        .filter_by(user_id=user_id)
+        .order_by(Meal.date.desc())
+        .all()
+    )
     return jsonify([m.serialize() for m in meals]), 200
 
 @meal_bp.post("/")
