@@ -24,7 +24,10 @@ def create_meal():
         return jsonify({"error": "Invalid meal type"}), 400
 
     try:
-        date_value = datetime.strptime(data.get("date", date.today().isoformat()), "%Y-%m-%d").date().isoformat()
+        if "date" in data and data["date"]:
+            date_value = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        else:
+            date_value = date.today()
     except ValueError:
         return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
 
@@ -61,7 +64,12 @@ def update_meal(meal_id):
 
     meal.name = data.get("name", meal.name)
     meal.meal_type = data.get("meal_type", meal.meal_type)
-    meal.date = data.get("date", meal.date)
+
+    if "date" in data and data["date"]:
+        try:
+            meal.date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        except ValueError:
+            return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
 
     db.session.commit()
     return jsonify(meal.serialize()), 200
@@ -83,8 +91,8 @@ def delete_meal(meal_id):
 @jwt_required()
 def daily_summary():
     user_id = int(get_jwt_identity())
-    today_str = date.today().isoformat()
-    meals = Meal.query.filter_by(user_id=user_id, date=today_str).all()
+    today_value = date.today()
+    meals = Meal.query.filter_by(user_id=user_id, date=today_value).all()
 
     total = {"calories": 0, "protein": 0, "carbs": 0, "fat": 0}
 
@@ -106,10 +114,10 @@ def weekly_summary():
 
     summaries = []
     for i in range(7):
-        day = (week_ago + timedelta(days=i)).isoformat()
+        day = week_ago + timedelta(days=i)
         meals = Meal.query.filter_by(user_id=user_id, date=day).all()
 
-        totals = {"date": day, "calories": 0, "protein": 0, "carbs": 0, "fat": 0}
+        totals = {"date": day.isoformat(), "calories": 0, "protein": 0, "carbs": 0, "fat": 0}
 
         for meal in meals:
             for food in meal.food_items:

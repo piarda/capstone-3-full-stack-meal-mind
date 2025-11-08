@@ -2,7 +2,11 @@ import React, { useState } from "react";
 
 const AddMealForm = ({ addMeal }) => {
     const [mealType, setMealType] = useState("Other");
-    const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+    const [date, setDate] = useState(() => {
+        const now = new Date();
+        const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+        return local.toISOString().split("T")[0];
+    });
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -12,7 +16,11 @@ const AddMealForm = ({ addMeal }) => {
         try {
             await addMeal({ meal_type: mealType, date });
             setMealType("Other");
-            setDate(new Date().toISOString().split("T")[0]);
+            setDate(() => {
+                const now = new Date();
+                const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+                return local.toISOString().split("T")[0];
+            });
         } finally {
             setLoading(false);
         }

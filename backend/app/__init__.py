@@ -11,7 +11,7 @@ db = SQLAlchemy()
 jwt = JWTManager()
 load_dotenv()
 
-def create_app():
+def create_app(testing=False):
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -25,6 +25,15 @@ def create_app():
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["Content-Type", "Authorization"]
     )
+
+    if testing:
+        app.config.update(
+            SQLALCHEMY_DATABASE_URI='sqlite:///:memory:',
+            TESTING=True,
+            SECRET_KEY='test_secret'
+        )
+    else:
+        app.config.from_object('app.config.Config')
     
     @app.before_request
     def handle_options_request():

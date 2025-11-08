@@ -25,7 +25,9 @@ const Dashboard = () => {
   const fetchMeals = async () => {
     try {
       const data = await api.get("/meals");
-      const today = new Date().toISOString().split("T")[0];
+      const now = new Date();
+      const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      const today = local.toISOString().split("T")[0];
       const todaysMeals = data.filter((meal) => meal.date === today);
       setMeals(todaysMeals);
     } catch (err) {
